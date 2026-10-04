@@ -137,3 +137,24 @@ void stopActuators() {
 
 <img width="1408" height="768" alt="52456" src="https://github.com/user-attachments/assets/2c78f5d1-f3d4-4b05-bfe9-572f29be5181" />
 <img width="1672" height="941" alt="52445" src="https://github.com/user-attachments/assets/646c6c20-b057-4fc4-a397-8cde4123c15a" />
+
+Load Distribution Analysis: Infinity Gear Bilateral Arm Module
+When an external payload or physical force is applied to the exoskeleton, the mechanical load must travel through a controlled pathway from the point of contact to the user's body without causing structural failure or localized pressure injuries. The load distribution architecture for the arm module functions across four distinct tiers:
+1. Primary Structural Load Path (The 2020 Aluminum Spine)
+ * Load Reception: External weight held by the hand or forearm first impacts the lower bracket and structural linkage.
+ * Axial Transfer: Instead of loading the human forearm bones directly, the kinetic force is transferred upward and diverted entirely into the 300 mm 2020 Aluminum Extrusion Rails.
+ * Rigid Support: Because 2020 aluminum extrusions possess high cross-sectional rigidity, they absorb the primary bending moments and axial compressive stresses, acting as an artificial exoskeleton skeleton parallel to the user's limbs.
+2. Actuation & Joint Force Transfer
+ * Elbow Assistance: When lifting a load, the 12V Micro Linear Actuators (200N) mounted laterally across the elbow joint experience high tension and compression forces.
+ * Torque Distribution: The actuators push against the upper-arm and forearm extrusion brackets simultaneously, creating a mechanical lever system that shares the lifting torque between the motor and the user's actual biceps.
+ * Dynamic Articulation: The MG996R Servos manage rapid directional changes, translating sudden inertial shifts away from the human joints and into the metal mounting plates.
+3. Ergonomic Pressure Dispersion (Straps & Foam Interface)
+ * Preventing Shear and Pinching: A rigid metal frame can create dangerous pressure points against human skin. To mitigate this, the interior channel is lined with MEARCOOH High-Density EVA Foam (~86–89 kg/m³).
+ * Surface Area Amplification: The high-density foam compresses uniformly under load, converting localized point stress into a wide, even pressure distribution across the bicep and forearm muscles.
+ * Secure Lockdown: The YMCRLUX Cinch Straps with Metal Buckles wrap securely around the exterior, locking the frame tightly against the arm so that the load shifts synchronously with the body rather than sliding or bouncing.
+4. Dynamic Feedback & Load Monitoring
+ * Kinematic Feedback: As weight shifts during movement, the GY-521 MPU6050 IMU Sensor tracks angular velocity and tilt changes in real time.
+ * Algorithmic Compensation: The ESP32 microcontroller reads these positional changes and adjusts the actuator PWM loops instantly, ensuring that motor assistance scales up when a heavy load causes the arm to dip, protecting the user from sudden muscle strain or buckling.
+> Engineering Summary: By routing structural weight through the 2020 aluminum backbone, absorbing shock through high-density EVA foam, and stabilizing force transmission via metal-buckle straps, the system safely bypasses the human joints—translating heavy mechanical loads directly into the ground or through the augmented skeletal framework.
+>
+> 
