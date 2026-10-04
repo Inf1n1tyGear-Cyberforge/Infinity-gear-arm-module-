@@ -135,3 +135,5 @@ void stopActuators() {
   digitalWrite(act2Pin2, LOW);
 }
 
+<img width="1408" height="768" alt="52456" src="https://github.com/user-attachments/assets/2c78f5d1-f3d4-4b05-bfe9-572f29be5181" />
+<img width="1672" height="941" alt="52445" src="https://github.com/user-attachments/assets/646c6c20-b057-4fc4-a397-8cde4123c15a" />
