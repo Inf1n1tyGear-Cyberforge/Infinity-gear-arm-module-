@@ -158,3 +158,4 @@ When an external payload or physical force is applied to the exoskeleton, the me
 > Engineering Summary: By routing structural weight through the 2020 aluminum backbone, absorbing shock through high-density EVA foam, and stabilizing force transmission via metal-buckle straps, the system safely bypasses the human joints—translating heavy mechanical loads directly into the ground or through the augmented skeletal framework.
 >
 > 
+<img width="1408" height="768" alt="52457" src="https://github.com/user-attachments/assets/26a2d48f-3430-47f2-ab30-959d0e165cb2" />
