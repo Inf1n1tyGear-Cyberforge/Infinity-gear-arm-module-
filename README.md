@@ -14,3 +14,124 @@ A mechanical frame and motors are only as effective as the intelligence driving 
 Spatial awareness is achieved via a GY-521 MPU6050 6-Axis IMU Sensor mounted directly on the forearm. By continuously tracking angular velocity, tilt angles, and movement trajectories in real time, the sensor feeds kinematic data back to the microcontroller. This allows the system to distinguish between resting states, voluntary lifts, and dynamic motions, ensuring that motor assistance engages precisely when needed.
 Conclusion
 The successful design and specification of the Infinity Gear arm module proves that complex wearable robotics can be engineered using accessible, modular components. By harmonizing rigid aluminum framing, high-force linear actuation, ergonomic cushioning, and intelligent sensor feedback, the arm module establishes a robust foundation for human augmentation—paving the way for seamless expansion into lower-limb jump and speed-assist modules.
+
+Wiring Connections Guide
+ 1. Wire the MPU6050 IMU Sensor (I2C)
+   Step 1
+   Connect the GY-521 MPU6050 sensor to the ESP32 using standard I2C pins:
+   * VCC \rightarrow ESP32 3.3V
+   * GND \rightarrow ESP32 GND
+   * SDA \rightarrow ESP32 GPIO 21
+   * SCL \rightarrow ESP32 GPIO 22
+   Verification: Open the Arduino Serial Monitor after uploading the code; you should see "MPU6050 connection successful!" without initialization errors.
+ 2. Connect the Dual Motor Driver (for 12V Actuators)
+   Step 2
+   Connect a dual motor driver (such as an L298N or BTS7960) to handle the high current required by the 12V micro linear actuators:
+   * Driver IN1 / IN2 \rightarrow ESP32 GPIO 25 / GPIO 26 (Left Actuator Control)
+   * Driver IN3 / IN4 \rightarrow ESP32 GPIO 27 / GPIO 14 (Right Actuator Control)
+   * Driver VCC / Power \rightarrow 12V Battery Positive (+)
+   * Driver GND \rightarrow Battery Negative (-) and tied to ESP32 GND (Common Ground)
+   Verification: Send a test command via code to move the actuators; they should extend smoothly in response to logic signals.
+ 3. Wire the MG996R Servos
+   Step 3
+   Connect the digital metal-gear servos for joint articulation:
+   * Left Servo Signal \rightarrow ESP32 GPIO 18
+   * Right Servo Signal \rightarrow ESP32 GPIO 19
+   * Servo VCC (Red) \rightarrow External 5V Regulated Rail (Do not power servos directly from the ESP32 3.3V pin)
+   * Servo GND (Brown/Black) \rightarrow Common Ground
+   Verification: Power on the system and observe that the servos lock into their default neutral position (90°) and respond to movement sweeps.
+ESP32 Firmware Code (esp32_arm_controller.ino)
+Copy and paste the following code into your Arduino IDE (ensure you have installed the MPU6050 and ESP32Servo libraries via the Library Manager):
+#include <Wire.h>
+#include <MPU6050.h>
+#include <ESP32Servo.h>
+
+// Initialize MPU6050 Sensor
+MPU6050 mpu;
+
+// Initialize Servos
+Servo leftServo;
+Servo rightServo;
+
+// Motor Driver Pins (L298N / Dual DC Motor Driver)
+const int act1Pin1 = 25;
+const int act1Pin2 = 26;
+const int act2Pin1 = 27;
+const int act2Pin2 = 14;
+
+// Servo Pins
+const int leftServoPin = 18;
+const int rightServoPin = 19;
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+
+  // Initialize MPU6050
+  mpu.initialize();
+  Serial.println(mpu.testConnection() ? "MPU6050 connection successful!" : "MPU6050 connection failed!");
+
+  // Configure Motor Control Pins
+  pinMode(act1Pin1, OUTPUT);
+  pinMode(act1Pin2, OUTPUT);
+  pinMode(act2Pin1, OUTPUT);
+  pinMode(act2Pin2, OUTPUT);
+
+  // Attach Servos
+  leftServo.attach(leftServoPin);
+  rightServo.attach(rightServoPin);
+
+  // Set initial neutral positions
+  leftServo.write(90);
+  rightServo.write(90);
+  stopActuators();
+}
+
+void loop() {
+  // Read sensor data (Accelerometer & Gyroscope)
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  // Map acceleration values to determine arm tilt angle (simple threshold logic)
+  // When arm tilts forward/backward, trigger assistance
+  if (ax > 10000) {
+    // Lift / Extend action
+    extendActuators();
+    leftServo.write(135);
+    rightServo.write(135);
+  } else if (ax < -10000) {
+    // Retract action
+    retractActuators();
+    leftServo.write(45);
+    rightServo.write(45);
+  } else {
+    // Hold position / Idle
+    stopActuators();
+    leftServo.write(90);
+    rightServo.write(90);
+  }
+
+  delay(50);
+}
+
+void extendActuators() {
+  digitalWrite(act1Pin1, HIGH);
+  digitalWrite(act1Pin2, LOW);
+  digitalWrite(act2Pin1, HIGH);
+  digitalWrite(act2Pin2, LOW);
+}
+
+void retractActuators() {
+  digitalWrite(act1Pin1, LOW);
+  digitalWrite(act1Pin2, HIGH);
+  digitalWrite(act2Pin1, LOW);
+  digitalWrite(act2Pin2, HIGH);
+}
+
+void stopActuators() {
+  digitalWrite(act1Pin1, LOW);
+  digitalWrite(act1Pin2, LOW);
+  digitalWrite(act2Pin1, LOW);
+  digitalWrite(act2Pin2, LOW);
+}
+
